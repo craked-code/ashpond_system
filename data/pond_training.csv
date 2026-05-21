@@ -1,0 +1,13 @@
+event_id,plant_name,region,season,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,observation_duration_days,breached,failure_mode,source
+E001,Sasan UMPP,Singrauli,Early Monsoon,0.48,0.07,21,155,0.85,110,1,Seepage + sustained rainfall,CAG Report 2021
+E002,Amarkantak TPS,Singrauli,Pre-Monsoon,0.38,0.15,16,120,0.65,45,1,Embankment saturation heavy rainfall,NGT Order 2022
+E003,NTPC Unchahar,Uttar Pradesh,Post-Monsoon,0.25,0.20,18,8,0.70,90,1,Dry cracking structural failure,Parliamentary Committee 2000
+E004,Raichur TPS,Karnataka,Peak Monsoon,0.42,0.10,14,168,0.55,75,1,Sustained monsoon rainfall seepage,KSPCB Report 2019
+E005,Bokaro TPS,Jharkhand,Monsoon,0.33,0.18,12,98,0.80,60,1,Partial breach proximity old failure,JSPCB Report 2017
+E006,Obra TPS,Uttar Pradesh,Peak Monsoon,0.40,0.12,17,142,0.60,55,1,Seepage driven peak monsoon,UPPCB Report 2020
+S001,Sasan UMPP,Singrauli,Monsoon,0.15,0.48,21,85,0.85,180,0,Stable monitoring period 2019,Site monitoring records
+S002,Amarkantak TPS,Singrauli,Monsoon,0.10,0.55,16,30,0.65,180,0,Stable monitoring period 2021,Site monitoring records
+S003,NTPC Unchahar,Uttar Pradesh,Monsoon,0.08,0.62,18,25,0.70,200,0,Stable monitoring period 1998,Site monitoring records
+S004,Raichur TPS,Karnataka,Monsoon,0.12,0.50,14,95,0.55,150,0,Stable monitoring period 2018,KSPCB baseline data
+S005,Bokaro TPS,Jharkhand,Monsoon,0.11,0.52,12,65,0.80,180,0,Stable monitoring period 2016,JSPCB baseline data
+S006,Obra TPS,Uttar Pradesh,Monsoon,0.09,0.58,17,72,0.60,160,0,Stable monitoring period 2019,UPPCB baseline data
