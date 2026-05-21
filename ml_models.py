@@ -110,52 +110,6 @@ def compute_shap_values(row, model, scaler):
         'base_value': round(base_val, 4),
     }
 
-def compute_shap_values(row, model, scaler):
-    df_train = get_training_data()
-    X_train  = df_train[FEATURE_COLS].values
-    X_train_s = scaler.transform(X_train)
-
-    coefs     = model.params_[FEATURE_COLS].values
-    base_val  = float(np.mean(X_train_s @ coefs))
-
-    X_pond    = scaler.transform([[
-        row['ndwi_score'], row['ndvi_score'], row['slope_degrees'],
-        row['rainfall_forecast_mm'], row['breach_proximity_score']
-    ]])
-    sv = X_pond[0] * coefs
-
-    return {
-        'ndwi':       round(float(sv[0]), 4),
-        'ndvi':       round(float(sv[1]), 4),
-        'slope':      round(float(sv[2]), 4),
-        'rainfall':   round(float(sv[3]), 4),
-        'proximity':  round(float(sv[4]), 4),
-        'base_value': round(base_val, 4),
-    }
-
-def compute_shap_values(row, model, scaler):
-    df_train = get_training_data()
-    X_train  = df_train[FEATURE_COLS].values
-    X_train_s = scaler.transform(X_train)
-
-    coefs     = model.params_[FEATURE_COLS].values
-    base_val  = float(np.mean(X_train_s @ coefs))
-
-    X_pond    = scaler.transform([[
-        row['ndwi_score'], row['ndvi_score'], row['slope_degrees'],
-        row['rainfall_forecast_mm'], row['breach_proximity_score']
-    ]])
-    sv = X_pond[0] * coefs
-
-    return {
-        'ndwi':       round(float(sv[0]), 4),
-        'ndvi':       round(float(sv[1]), 4),
-        'slope':      round(float(sv[2]), 4),
-        'rainfall':   round(float(sv[3]), 4),
-        'proximity':  round(float(sv[4]), 4),
-        'base_value': round(base_val, 4),
-    }
-
 def compute_bayesian_dii(row, n=1000, noise_std=0.02):
     scores = []
     for _ in range(n):
