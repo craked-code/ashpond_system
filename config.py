@@ -1,7 +1,7 @@
 import os
 
 # API Keys 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "gsk_PASTE_YOUR_KEY_HERE")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_MODEL = "llama3-8b-8192"
 
 # App
