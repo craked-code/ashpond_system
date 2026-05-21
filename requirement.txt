@@ -1,15 +1,25 @@
-geopandas
+# Core UI, Layout, and Map Features
 streamlit==1.35.0
 streamlit-folium==0.20.0
 folium==0.17.0
 plotly==5.22.0
+streamlit-autorefresh
+
+# Data Engineering and Geoprocessing
 pandas==2.2.2
+geopandas
+scipy
+
+# Machine Learning and Statistical AI Layers
 scikit-learn==1.5.0
-requests==2.32.3
+shap
+ruptures
+
+# LLM Conversational Assistant & API Connections
 groq==0.9.0
+requests==2.32.3
+
+# Satellite Procurement Pipeline (STAC Core)
 planetary-computer
 pystac-client
 stackstac
-shap
-ruptures
-scipy
