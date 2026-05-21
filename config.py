@@ -5,7 +5,7 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "gsk_PASTE_YOUR_KEY_HERE")
 GROQ_MODEL = "llama3-8b-8192"
 
 # App
-APP_TITLE = "CoalWatch — Ash Pond Breach Early Warning System"
+APP_TITLE = "Ashpond_system — Ash Pond Breach Early Warning System"
 
 # Risk Thresholds
 CRITICAL_THRESHOLD = 0.70
