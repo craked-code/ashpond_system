@@ -57,7 +57,7 @@ def train_and_save():
     scaler = StandardScaler()
     scaler.fit(df_train[FEATURE_COLS].values)
     
-    with open(os.path.join(MODEL_DIR, "logistic_model.pkl"), "wb") as f:
+    with open(os.path.join(MODEL_DIR, "cox_model.pkl"), "wb") as f:
         pickle.dump(cph, f)
     with open(os.path.join(MODEL_DIR, "scaler.pkl"), "wb") as f:
         pickle.dump(scaler, f)
@@ -89,17 +89,23 @@ def compute_breach_probability(row, model, scaler):
 
 def compute_shap_values(row, model, scaler):
     df_train = get_training_data()
-    X_train  = df_train[FEATURE_COLS].values
-    X_train_s = scaler.transform(X_train)
+    X_train = df_train[FEATURE_COLS].values
+    np.random.seed(42)
+    bg_idx = np.random.choice(len(X_train), size=min(50, len(X_train)), replace=False)
+    X_background = X_train[bg_idx]
 
-    coefs     = model.params_[FEATURE_COLS].values
-    base_val  = float(np.mean(X_train_s @ coefs))
+    def predict_fn(X):
+        df_temp = pd.DataFrame(X, columns=FEATURE_COLS)
+        return model.predict_partial_hazard(df_temp).values
 
-    X_pond    = scaler.transform([[
+    explainer = shap.KernelExplainer(predict_fn, X_background)
+
+    explainer = shap.KernelExplainer(predict_fn, X_background)
+    X_pond = np.array([[
         row['ndwi_score'], row['ndvi_score'], row['slope_degrees'],
         row['rainfall_forecast_mm'], row['breach_proximity_score']
     ]])
-    sv = X_pond[0] * coefs
+    sv = explainer.shap_values(X_pond, nsamples=100)[0]
 
     return {
         'ndwi':       round(float(sv[0]), 4),
@@ -107,7 +113,7 @@ def compute_shap_values(row, model, scaler):
         'slope':      round(float(sv[2]), 4),
         'rainfall':   round(float(sv[3]), 4),
         'proximity':  round(float(sv[4]), 4),
-        'base_value': round(base_val, 4),
+        'base_value': round(float(explainer.expected_value), 4),
     }
 
 def compute_bayesian_dii(row, n=1000, noise_std=0.02):
@@ -116,7 +122,9 @@ def compute_bayesian_dii(row, n=1000, noise_std=0.02):
         ndwi = max(0, row['ndwi_score']  + np.random.normal(0, noise_std))
         ndvi = max(0, min(0.70, row['ndvi_score'] + np.random.normal(0, noise_std)))
         rain = max(0, row['rainfall_forecast_mm'] + np.random.normal(0, 5))
-        sar  = max(0, row.get('sar_backscatter', 0.05) + np.random.normal(0, 0.01))
+        sar_raw = row.get('sar_backscatter', 0.05)
+        sar_raw = 0.05 if (sar_raw is None or pd.isna(sar_raw)) else sar_raw
+        sar = max(0, sar_raw + np.random.normal(0, 0.01))
         dii  = (
             config.W_NDWI      * min(ndwi / config.NDWI_MAX, 1.0) +
             config.W_NDVI      * min((1 - ndvi) / config.NDVI_STRESS_MAX, 1.0) +

@@ -1,4 +1,13 @@
-event_id,plant_name,region,season,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,observation_duration_days,breached,failure_mode,source
+import io
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ==========================================
+# 1. LOAD AND PREPROCESS DATA
+# ==========================================
+raw_data = """event_id,plant_name,region,season,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,observation_duration_days,breached,failure_mode,source
 E001,Sasan UMPP,Singrauli,monsoon,0.46,0.08,21,142,0.85,14,1,seepage_failure,NGT_Hira_Lal_Bais
 E002,Essar Mahan Power,Singrauli,monsoon,0.38,0.12,18,158,0.78,9,1,monsoon_saturation,Manthan_2021
 E003,NTPC Vindhyachal,Singrauli,post_monsoon,0.32,0.18,16,88,0.72,21,1,structural_deficiency,NGT_OA_164_2018
@@ -46,4 +55,55 @@ E044,NTPC Korba,Korba,post_monsoon,0.26,0.24,19,82,0.80,30,0,none,HEI_Vol2_2021
 E045,Koradi TPS,Nagpur,post_monsoon,0.24,0.28,14,76,0.76,32,0,none,SANDRP_2022
 E046,Rihand STPS,Singrauli,post_monsoon,0.12,0.48,11,38,0.35,60,0,none,HEI_Compendium_2020
 E047,BSPCL Bokaro,Bokaro,pre_monsoon,0.15,0.42,17,36,0.70,45,0,none,SANDRP_2022
-E048,NTPC Talcher,Talcher,post_monsoon,0.14,0.45,16,44,0.71,50,0,none,HEI_Compendium_2020
+E048,NTPC Talcher,Talcher,post_monsoon,0.14,0.45,16,44,0.71,50,0,none,HEI_Compendium_2020"""
+
+df = pd.read_csv(io.StringIO(raw_data))
+
+# Select numerical engineering attributes and target outcome row
+feature_cols = [
+    'ndwi_score', 'ndvi_score', 'slope_degrees', 
+    'rainfall_forecast_mm', 'breach_proximity_score', 
+    'observation_duration_days', 'breached'
+]
+analysis_df = df[feature_cols]
+
+# ==========================================
+# 2. COMPUTE COVARIANCE MATRIX
+# ==========================================
+cov_matrix = analysis_df.cov()
+
+print("--- RAW COVARIANCE MATRIX MATRIX ---")
+print(cov_matrix.round(4))
+
+# Isolate feature directional interaction mapping against the target variable 'breached'
+target_covariance = cov_matrix['breached'].drop('breached')
+sorted_drivers = target_covariance.abs().sort_values(ascending=False)
+
+print("\n--- ATTRIBUTE DEVIATION RANKING RELATIVE TO BREACH OUTCOMES ---")
+for idx in sorted_drivers.index:
+    raw_val = target_covariance[idx]
+    print(f"Feature: {idx:<26} | Covariance Vector: {raw_val:>8.4f}")
+
+# ==========================================
+# 3. GRAPHICAL HEATMAP GENERATION
+# ==========================================
+plt.figure(figsize=(10, 8))
+
+# Mask the upper triangle to emphasize clean scannability
+mask = np.triu(np.ones_like(cov_matrix, dtype=bool))
+
+sns.heatmap(
+    cov_matrix,
+    mask=mask,
+    annot=True,
+    fmt=".2f",
+    cmap="PRGn",  # Diverging palette highlights positive vs negative variance steps
+    center=0,
+    square=True,
+    linewidths=0.5,
+    cbar_kws={"label": "Covariance Magnitude (Scale-Dependent)"}
+)
+
+plt.title("CoalWatch Engineering Feature Covariance Space Map", fontsize=14, fontweight='bold', pad=15)
+plt.tight_layout()
+plt.show()

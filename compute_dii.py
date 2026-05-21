@@ -6,7 +6,9 @@ def compute_dii_row(row):
     ndvi_n  = min((1 - row['ndvi_score']) / config.NDVI_STRESS_MAX, 1.0)
     slope_n = min(row['slope_degrees'] / config.SLOPE_MAX, 1.0)
     rain_n  = min(row['rainfall_forecast_mm'] / config.RAINFALL_MAX, 1.0)
-    sar_n   = min(row.get('sar_backscatter', 0.05) / config.SAR_MAX, 1.0)
+    sar_val = row.get('sar_backscatter', 0.05)
+    sar_val = 0.05 if (sar_val is None or pd.isna(sar_val)) else sar_val
+    sar_n   = min(sar_val / config.SAR_MAX, 1.0)
     prox    = row['breach_proximity_score']
     return round(
         config.W_NDWI      * ndwi_n  +

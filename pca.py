@@ -1,4 +1,15 @@
-event_id,plant_name,region,season,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,observation_duration_days,breached,failure_mode,source
+import io
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+# ==========================================
+# 1. LOAD AND PREPROCESS DATA
+# ==========================================
+raw_data = """event_id,plant_name,region,season,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,observation_duration_days,breached,failure_mode,source
 E001,Sasan UMPP,Singrauli,monsoon,0.46,0.08,21,142,0.85,14,1,seepage_failure,NGT_Hira_Lal_Bais
 E002,Essar Mahan Power,Singrauli,monsoon,0.38,0.12,18,158,0.78,9,1,monsoon_saturation,Manthan_2021
 E003,NTPC Vindhyachal,Singrauli,post_monsoon,0.32,0.18,16,88,0.72,21,1,structural_deficiency,NGT_OA_164_2018
@@ -46,4 +57,95 @@ E044,NTPC Korba,Korba,post_monsoon,0.26,0.24,19,82,0.80,30,0,none,HEI_Vol2_2021
 E045,Koradi TPS,Nagpur,post_monsoon,0.24,0.28,14,76,0.76,32,0,none,SANDRP_2022
 E046,Rihand STPS,Singrauli,post_monsoon,0.12,0.48,11,38,0.35,60,0,none,HEI_Compendium_2020
 E047,BSPCL Bokaro,Bokaro,pre_monsoon,0.15,0.42,17,36,0.70,45,0,none,SANDRP_2022
-E048,NTPC Talcher,Talcher,post_monsoon,0.14,0.45,16,44,0.71,50,0,none,HEI_Compendium_2020
+E048,NTPC Talcher,Talcher,post_monsoon,0.14,0.45,16,44,0.71,50,0,none,HEI_Compendium_2020"""
+
+df = pd.read_csv(io.StringIO(raw_data))
+
+# Isolate structural/environmental predictor components
+feature_cols = [
+    'ndwi_score', 'ndvi_score', 'slope_degrees', 
+    'rainfall_forecast_mm', 'breach_proximity_score', 'observation_duration_days'
+]
+X = df[feature_cols]
+
+# Standardize to zero mean and unit variance (Crucial for PCA)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# ==========================================
+# 2. RUN DECOMPOSITION (PCA)
+# ==========================================
+pca = PCA()
+X_pca = pca.fit_transform(X_scaled)
+
+# Determine Explained Variance Ratio
+var_explained = pca.explained_variance_ratio_
+cum_var_explained = np.cumsum(var_explained)
+
+print("--- PCA STATISTICAL MATRIX SUMMARY ---")
+for i, var in enumerate(var_explained):
+    print(f"Principal Component {i+1}: {var*100:.2f}% Variance Captured (Cumulative: {cum_var_explained[i]*100:.2f}%)")
+
+# ==========================================
+# 3. EXTRACT FEATURE IMPORTANCE (LOADINGS)
+# ==========================================
+# Loadings are the coefficients of the linear combination of the original variables
+loadings = pd.DataFrame(
+    pca.components_.T, 
+    columns=[f'PC{i+1}' for i in range(len(feature_cols))], 
+    index=feature_cols
+)
+
+print("\n--- COMPONENT LOADINGS MATRIX (WEIGHTS) ---")
+print(loadings[['PC1', 'PC2']].round(3))
+
+# Calculate absolute cumulative importance over top components
+feature_importance = pd.DataFrame({
+    'Feature': feature_cols,
+    'PC1_Absolute_Weight': np.abs(loadings['PC1']),
+    'Total_Variance_Contribution': np.sum(np.abs(loadings.iloc[:, :2]), axis=1)
+}).sort_values(by='Total_Variance_Contribution', ascending=False)
+
+print("\n--- DERIVED RANKING OF KEY DRIVERS ---")
+print(feature_importance.to_string(index=False))
+
+# ==========================================
+# 4. RENDER GRAPHICAL INFERENCE PLOTS
+# ==========================================
+plt.figure(figsize=(15, 5))
+
+# Plot A: Scree Plot (Variance Profile)
+plt.subplot(1, 3, 1)
+plt.bar(range(1, len(var_explained)+1), var_explained*100, alpha=0.7, color='darkblue', label='Individual')
+plt.step(range(1, len(cum_var_explained)+1), cum_var_explained*100, where='mid', color='red', marker='o', label='Cumulative')
+plt.title('Scree Variance Profile Plot')
+plt.xlabel('Principal Component Index')
+plt.ylabel('Variance Contribution Percentage (%)')
+plt.grid(True, linestyle='--')
+plt.legend()
+
+# Plot B: Loading Heatmap (Feature Importance Profiles)
+plt.subplot(1, 3, 2)
+sns.heatmap(loadings[['PC1', 'PC2']], annot=True, cmap='RdBu_r', vmin=-1, vmax=1, cbar=True)
+plt.title('Feature Coordinate Weights Heatmap')
+plt.ylabel('Sensor Feature Track')
+
+# Plot C: 2D Principal Component Projection Space
+plt.subplot(1, 3, 3)
+colors = {0: 'forestgreen', 1: 'crimson'}
+labels = {0: 'Operational Stable', 1: 'Breached Containment'}
+for breached_status in [0, 1]:
+    mask = df['breached'] == breached_status
+    plt.scatter(
+        X_pca[mask, 0], X_pca[mask, 1], 
+        c=colors[breached_status], label=labels[breached_status],
+        edgecolors='black', s=60, alpha=0.85
+    )
+plt.title('2D PCA Cluster Separation Space')
+plt.xlabel(f'PC1 ({var_explained[0]*100:.1f}%)')
+plt.ylabel(f'PC2 ({var_explained[1]*100:.1f}%)')
+plt.grid(True, linestyle='--')
+plt.legend()
+
+plt.tight_layout()
+plt.show()

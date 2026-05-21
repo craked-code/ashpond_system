@@ -57,11 +57,13 @@ with st.sidebar:
 st.title("⚠️ Coal Ash Pond Breach Early Warning System")
 st.caption("DII & Breach Probability · SHAP Explainability · Anomaly Detection · Change Point Analysis")
 st.divider()
+
 if st.sidebar.button("🔄 Refresh Now"):
-    import subprocess
-    subprocess.run(["python", "fetch_rainfall.py"])
-    subprocess.run(["python", "compute_dii.py"])
-    subprocess.run(["python", "ml_models.py"])
+    import sys, subprocess
+    with st.spinner("Running pipeline..."):
+        subprocess.run([sys.executable, "fetch_rainfall.py"])
+        subprocess.run([sys.executable, "compute_dii.py"])
+        subprocess.run([sys.executable, "ml_models.py"])
     st.cache_data.clear()
     st.rerun()
 
@@ -70,7 +72,7 @@ st.subheader("🗺️ Feature 1 — Risk Mapping Matrix")
 try:
     from map_module import build_risk_map
     map_obj = build_risk_map(df)
-    st_folium(map_obj, width="100%", height=480, returned_objects=[])
+    st_folium(map_obj, width="100%", height=480, returned_objects=[], key="risk_map")
 except Exception as e:
     st.warning(f"Map Rendering Offline: {e}")
     st.dataframe(df[['pond_name', 'dii_score', 'breach_probability', 'risk_category']])
