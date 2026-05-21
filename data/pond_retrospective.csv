@@ -1,0 +1,8 @@
+date,dii_score,event,annotation,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,breach_in_30_days
+2020-01-01,0.31,Normal,Winter dry season - embankment stable,0.12,0.55,21,15,0.85,0
+2020-02-01,0.38,Normal,Temperature rise - minor upstream snowmelt,0.16,0.42,21,18,0.85,0
+2020-03-01,0.52,ELEVATED,Pre-monsoon moisture onset - NDWI rising,0.26,0.28,21,45,0.85,0
+2020-04-01,0.61,ELEVATED,Early monsoon arrival - sustained rainfall begins,0.32,0.19,21,78,0.85,1
+2020-04-07,0.71,CRITICAL,Critical threshold crossed - inspection warranted,0.40,0.12,21,112,0.85,1
+2020-04-14,0.79,CRITICAL,Heavy sustained rainfall - NDWI 0.44 seepage active,0.44,0.09,21,138,0.85,1
+2020-04-20,0.86,BREACH,ACTUAL BREACH EVENT - Rihand reservoir contaminated,0.48,0.07,21,155,0.85,1
