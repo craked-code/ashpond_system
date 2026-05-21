@@ -3,6 +3,9 @@ import pandas as pd
 from streamlit_folium import st_folium
 import config
 from data_loader import load_pond_data, load_retrospective_data, load_model
+from streamlit_autorefresh import st_autorefresh
+
+#st_autorefresh(interval=30 * 60 * 1000, key="data_refresh")
 
 st.set_page_config(
     page_title="CoalWatch",
@@ -10,6 +13,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+st_autorefresh(interval=30 * 60 * 1000, key="data_refresh")
 
 @st.cache_data
 def get_data():
@@ -52,6 +57,13 @@ with st.sidebar:
 st.title("⚠️ Coal Ash Pond Breach Early Warning System")
 st.caption("DII & Breach Probability · SHAP Explainability · Anomaly Detection · Change Point Analysis")
 st.divider()
+if st.sidebar.button("🔄 Refresh Now"):
+    import subprocess
+    subprocess.run(["python", "fetch_rainfall.py"])
+    subprocess.run(["python", "compute_dii.py"])
+    subprocess.run(["python", "ml_models.py"])
+    st.cache_data.clear()
+    st.rerun()
 
 # FEATURE 1: FOLIUM MAP (Person 1 Component)
 st.subheader("🗺️ Feature 1 — Risk Mapping Matrix")
@@ -98,7 +110,7 @@ try:
             st.metric("Simulated DII Response Target", f"{sim_dii:.2f}", delta=f"Transitions to {sim_cat} (+{extra_rain}mm)")
 
         if model is not None:
-            from ml_model import compute_shap_values
+            from ml_models import compute_shap_values
             shap_dict = compute_shap_values(row, model, scaler)
             st.plotly_chart(build_shap_waterfall(shap_dict, row['pond_name']), use_container_width=True)
         else:
