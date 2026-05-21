@@ -1,0 +1,11 @@
+pond_id,pond_name,plant_name,region,latitude,longitude,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,sar_backscatter,dii_score,risk_category,top_risk_factor,last_updated,dii_score_prev,dii_trend,breach_probability,dii_lower,dii_upper,mahal_distance,profile_anomaly,dii_mean
+P001,Sasan UMPP Pond A,Sasan UMPP,Singrauli,23.97,82.628,0.45,0.08,21,138,0.85,0.18,0.831,CRITICAL,Seepage + Vegetation Die-off,2024-07-15,0.74,↑,0.075,0.808,0.855,1.93,False,0.831
+P002,Sasan UMPP Pond B,Sasan UMPP,Singrauli,23.9678,82.6295,0.28,0.19,14,112,0.8,0.12,0.629,ELEVATED,Monsoon Rainfall + Proximity,2024-07-15,0.58,↑,0.069,0.604,0.654,2.709,True,0.629
+P003,Vindhyachal STPS Pond 1,Vindhyachal STPS,Singrauli,24.095,82.67,0.1,0.54,5,21,0.15,0.04,0.237,STABLE,Low Seasonal Baseline,2024-07-15,0.22,↓,0.148,0.211,0.26,1.324,False,0.237
+P004,Vindhyachal STPS Pond 2,Vindhyachal STPS,Singrauli,24.093,82.6725,0.08,0.61,4,17,0.15,0.03,0.197,STABLE,Low Seasonal Baseline,2024-07-15,0.14,→,0.112,0.175,0.221,2.157,False,0.197
+P005,Rihand STPS Pond,Rihand STPS,Singrauli,24.0347,82.8156,0.22,0.27,11,68,0.35,0.09,0.473,ELEVATED,Vegetation Stress + Rainfall,2024-07-15,0.43,↑,0.201,0.45,0.497,2.465,False,0.473
+P006,NTPC Korba Pond A,NTPC Korba,Korba,22.387,82.682,0.42,0.12,20,132,0.65,0.16,0.773,CRITICAL,Active Seepage + Steep Slope,2024-07-15,0.68,↑,0.103,0.75,0.797,2.221,False,0.773
+P007,NTPC Korba Pond B,NTPC Korba,Korba,22.3848,82.6838,0.3,0.21,13,74,0.6,0.11,0.575,ELEVATED,NDWI Elevation + Proximity,2024-07-15,0.52,↑,0.162,0.55,0.601,2.476,True,0.575
+P008,CSEB Korba West Pond,CSEB Korba West,Korba,22.3612,82.7012,0.13,0.46,6,31,0.3,0.05,0.302,STABLE,Moderate Rainfall Exposure,2024-07-15,0.3,↓,0.147,0.278,0.326,1.16,False,0.302
+P009,Korba East Pond,Korba East TPS,Korba,22.3398,82.7156,0.09,0.51,5,22,0.25,0.04,0.249,STABLE,Low Risk - Monitoring Only,2024-07-15,0.18,→,0.129,0.226,0.272,1.255,False,0.249
+P010,Hasdeo TPS Pond,Hasdeo TPS,Korba,22.3201,82.6734,0.11,0.64,7,16,0.2,0.04,0.234,STABLE,Low Risk - Monitoring Only,2024-07-15,0.13,↓,0.063,0.21,0.257,2.733,True,0.234
