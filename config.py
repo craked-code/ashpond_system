@@ -1,8 +1,11 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # API Keys 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
-GROQ_MODEL = "llama3-8b-8192"
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 # App
 APP_TITLE = "Ashpond_system — Ash Pond Breach Early Warning System"

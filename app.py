@@ -5,10 +5,15 @@ import config
 from data_loader import load_pond_data, load_retrospective_data, load_model
 from streamlit_autorefresh import st_autorefresh
 
+from ml_models import compute_shap_values
+
+from chat_module import init_semantic_index
+init_semantic_index()
+
 #st_autorefresh(interval=30 * 60 * 1000, key="data_refresh")
 
 st.set_page_config(
-    page_title="CoalWatch",
+    page_title="AshPond System",
     page_icon="⚠️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -39,7 +44,7 @@ except Exception as e:
 
 # SIDEBAR MONITORING METRICS
 with st.sidebar:
-    st.title("CoalWatch")
+    st.title("AshPond System")
     st.caption("AI-powered Breach Early Warning")
     st.divider()
     st.metric("🔴 CRITICAL", len(df[df.risk_category == "CRITICAL"]))
@@ -152,7 +157,7 @@ if prompt := st.chat_input("Query current ash pond risk metrics..."):
         with st.spinner("Executing analytical verification across framework tables..."):
             try:
                 from chat_module import ask_assistant
-                response = ask_assistant(prompt, st.session_state.messages[:-1], df)
+                response = ask_assistant(prompt, df)
             except Exception as e:
                 response = f"Chat Client Connection Timeout: {str(e)[:60]}"
         st.write(response)
