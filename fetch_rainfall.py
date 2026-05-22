@@ -83,6 +83,15 @@ def run():
     
     with open(CACHE_PATH, 'w') as f:
         json.dump(cache, f, indent=2)
+
+    config_path = os.path.join(os.path.dirname(__file__), "config.py")
+    with open(config_path, 'r') as f:
+        content = f.read()
+    new_ts = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M IST")
+    import re
+    content = re.sub(r'LAST_FETCH = ".*?"', f'LAST_FETCH = "{new_ts}"', content)
+    with open(config_path, 'w') as f:
+        f.write(content)
     
     print("✅ Hydrological forecast arrays updated in target fields.")
 

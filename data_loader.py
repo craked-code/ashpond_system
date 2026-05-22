@@ -57,3 +57,33 @@ def get_pond_by_name_fuzzy(pond_name, df):
         if any(k in name_lower for k in keywords if len(k) > 3):
             return row
     return None
+
+def load_inspection_log():
+    log_path = os.path.join(DATA_DIR, "inspection_log.csv")
+    if not os.path.exists(log_path):
+        return pd.DataFrame(columns=[
+            'timestamp', 'pond_id', 'pond_name',
+            'inspector_name', 'notes', 'photo_filename'
+        ])
+    return pd.read_csv(log_path)
+
+
+def save_inspection(pond_id, pond_name, inspector_name, notes, photo_filename=""):
+    log_path = os.path.join(DATA_DIR, "inspection_log.csv")
+    photos_dir = os.path.join(DATA_DIR, "photos")
+    os.makedirs(photos_dir, exist_ok=True)
+
+    new_row = pd.DataFrame([{
+        'timestamp':      pd.Timestamp.now().strftime("%Y-%m-%d %H:%M"),
+        'pond_id':        pond_id,
+        'pond_name':      pond_name,
+        'inspector_name': inspector_name,
+        'notes':          notes,
+        'photo_filename': photo_filename,
+    }])
+
+    if os.path.exists(log_path):
+        existing = pd.read_csv(log_path)
+        pd.concat([existing, new_row], ignore_index=True).to_csv(log_path, index=False)
+    else:
+        new_row.to_csv(log_path, index=False)

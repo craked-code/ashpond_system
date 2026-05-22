@@ -1,15 +1,30 @@
 import folium
 import config
+import pandas as pd
 
 COLOR_MAP  = {"CRITICAL":"#d32f2f","ELEVATED":"#f57c00","STABLE":"#388e3c"}
 RADIUS_MAP = {"CRITICAL":18,"ELEVATED":14,"STABLE":10}
 
-def build_risk_map(df):
+def build_risk_map(df, inspection_log=None):
     m = folium.Map(
         location=[config.MAP_CENTER_LAT, config.MAP_CENTER_LON],
         zoom_start=config.MAP_ZOOM,
         tiles="CartoDB positron"
     )
+
+    last_inspected = {}
+    if inspection_log is not None and len(inspection_log) > 0:
+        inspection_log['timestamp'] = pd.to_datetime(inspection_log['timestamp'])
+        latest = inspection_log.sort_values('timestamp', ascending=False)
+        latest = latest.drop_duplicates(subset='pond_id', keep='first')
+        for _, ins in latest.iterrows():
+            delta = pd.Timestamp.now() - ins['timestamp']
+            days  = delta.days
+            if days == 0:
+                last_inspected[ins['pond_id']] = "Today"
+            else:
+                last_inspected[ins['pond_id']] = f"{days}d ago"
+
     for _, row in df.iterrows():
         color   = COLOR_MAP.get(row['risk_category'], "#607d8b")
         radius  = RADIUS_MAP.get(row['risk_category'], 10)
@@ -79,6 +94,12 @@ def build_risk_map(df):
                     <div>NDWI {row['ndwi_score']} · NDVI {row['ndvi_score']} · 
                          Slope {row['slope_degrees']}° · Rain {row['rainfall_forecast_mm']}mm</div>
                     <div>SAR: {row.get('sar_backscatter','N/A')}</div>
+                </div>
+                <div style="border-top:1px solid #2a2f3e;margin:8px 0 0 0;padding-top:8px;">
+                    <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.05em;
+                                color:{"#86efac" if row["pond_id"] in last_inspected else "#ef4444"};">
+                        🔍 Last Inspected: {last_inspected.get(row["pond_id"], "Never — inspection required")}
+                    </div>
                 </div>
             </div>"""
         

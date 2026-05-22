@@ -24,7 +24,7 @@ RETRO_DISCLAIMER = (
     "Simulated retrospective analysis based on Singrauli 2020 monsoon onset "
     "records and Sasan UMPP site parameters. Not derived from live satellite imagery."
 )
-LAST_FETCH = "2024-07-15 09:00 IST"
+LAST_FETCH = "2026-05-22 08:29 IST"
 
 # Feature Normalisation Maxima 
 NDWI_MAX = 0.55

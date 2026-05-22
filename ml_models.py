@@ -88,6 +88,7 @@ def compute_breach_probability(row, model, scaler):
     return round(float(1 - survival_prob), 3)
 
 def compute_shap_values(row, model, scaler):
+    import shap
     df_train = get_training_data()
     X_train = df_train[FEATURE_COLS].values
     np.random.seed(42)
@@ -115,7 +116,7 @@ def compute_shap_values(row, model, scaler):
         'base_value': round(float(explainer.expected_value), 4),
     }
 
-def compute_bayesian_dii(row, n=1000, noise_std=0.02):
+def compute_dii_uncertainity(row, n=1000, noise_std=0.02):
     scores = []
     for _ in range(n):
         ndwi = max(0, row['ndwi_score']  + np.random.normal(0, noise_std))
@@ -157,7 +158,7 @@ def run_all_ml(df):
         lambda r: compute_breach_probability(r, model, scaler), axis=1
     )
 
-    bayes = df.apply(lambda r: compute_bayesian_dii(r), axis=1, result_type='expand')
+    bayes = df.apply(lambda r: compute_dii_uncertainity(r), axis=1, result_type='expand')
     df['dii_mean']  = bayes[0]
     df['dii_lower'] = bayes[1]
     df['dii_upper'] = bayes[2]
