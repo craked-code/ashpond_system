@@ -6,18 +6,15 @@ import pandas as pd
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 CACHE_PATH = os.path.join(DATA_DIR, "rainfall_cache.json")
 
-POND_COORDS = {
-    "P001": (24.0721, 82.5892),
-    "P002": (24.0698, 82.5901),
-    "P003": (24.0833, 82.6667),
-    "P004": (24.0812, 82.6701),
-    "P005": (24.0347, 82.8156),
-    "P006": (22.3460, 82.6890),
-    "P007": (22.3421, 82.6912),
-    "P008": (22.3612, 82.7012),
-    "P009": (22.3398, 82.7156),
-    "P010": (22.3201, 82.6734),
-}
+def _build_pond_coords():
+    coords = {}
+    try:
+        _df = pd.read_csv(os.path.join(DATA_DIR, "pond_data.csv"))
+        for _, r in _df.iterrows():
+            coords[r["pond_id"]] = (float(r["latitude"]), float(r["longitude"]))
+    except Exception:
+        pass
+    return coords
 
 def run():
     # Defensive programming: Ensure directories exist
@@ -35,6 +32,7 @@ def run():
     except Exception:
         cache = {}
 
+    POND_COORDS = _build_pond_coords()
     # Extract coordinates in exact sequential order for multi-location mapping
     pids = list(POND_COORDS.keys())
     lats = [str(POND_COORDS[pid][0]) for pid in pids]
@@ -47,6 +45,7 @@ def run():
         f"&daily=precipitation_sum&forecast_days=3&timezone=Asia/Kolkata"
     )
 
+    rainfall_source = "live"
     try:
         print("📡 Querying batched 72-hour weather forecast arrays...")
         r = requests.get(url, timeout=8)
@@ -70,12 +69,14 @@ def run():
             cache[pid] = mm
 
     except Exception as e:
+        rainfall_source = "cache"
         print(f"⚠️ Live API payload failed ({e}). Reverting to fallbacks...")
         for pid in pids:
             mm = cache.get(pid, 50.0)  # Standard baseline fallback metric
             print(f"  {pid}: {mm}mm extracted from localized storage cache")
             df.loc[df['pond_id'] == pid, 'rainfall_forecast_mm'] = mm
             cache[pid] = mm
+    df['rainfall_source'] = rainfall_source
 
     # Commit state changes cleanly back to CSV data engine layer
     df.to_csv(os.path.join(DATA_DIR, "pond_data.csv"), index=False)

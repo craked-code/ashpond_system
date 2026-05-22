@@ -21,7 +21,8 @@ def compute_dii_row(row):
     )
 
 def run():
-    df = pd.read_csv("data/pond_data.csv")
+    import os
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "data", "pond_data.csv"))
     df['dii_score_prev'] = df['dii_score']
     df['dii_score'] = df.apply(compute_dii_row, axis=1)
 
@@ -38,7 +39,7 @@ def run():
         axis=1
     )
 
-    df.to_csv("data/pond_data.csv", index=False)
+    df.to_csv(os.path.join(os.path.dirname(__file__), "data", "pond_data.csv"), index=False)
     print(df[['pond_name','dii_score','risk_category']])
 
 

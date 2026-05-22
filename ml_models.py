@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import pickle
 import os
-import shap
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -17,7 +16,8 @@ FEATURE_COLS = config.FEATURE_COLS
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 def get_training_data():
-    df = pd.read_csv("data/pond_training.csv")
+    import os
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "data", "pond_training.csv"))
     
     train_cols = FEATURE_COLS + ['observation_duration_days', 'breached']
     df_train   = df[train_cols].copy()
@@ -67,7 +67,7 @@ def train_and_save():
     return cph, scaler
 
 def load_model():
-    mp = os.path.join(MODEL_DIR, "logistic_model.pkl")
+    mp = os.path.join(MODEL_DIR, "ocx_model.pkl")
     sp = os.path.join(MODEL_DIR, "scaler.pkl")
     if not os.path.exists(mp):
         return train_and_save()
@@ -100,7 +100,6 @@ def compute_shap_values(row, model, scaler):
 
     explainer = shap.KernelExplainer(predict_fn, X_background)
 
-    explainer = shap.KernelExplainer(predict_fn, X_background)
     X_pond = np.array([[
         row['ndwi_score'], row['ndvi_score'], row['slope_degrees'],
         row['rainfall_forecast_mm'], row['breach_proximity_score']
@@ -172,7 +171,7 @@ def run_all_ml(df):
         return "STABLE"
 
     df['risk_category'] = df['dii_score'].apply(categorise)
-    df.to_csv("data/pond_data.csv", index=False)
+    df.to_csv(os.path.join(os.path.dirname(__file__), "data", "pond_data.csv"), index=False)
 
     print(df[['pond_name','dii_score','dii_lower','dii_upper',
               'breach_probability','profile_anomaly','risk_category']])
@@ -182,5 +181,5 @@ def run_all_ml(df):
     return df
 
 if __name__ == "__main__":
-    df = pd.read_csv("data/pond_data.csv")
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "data", "pond_data.csv"))
     run_all_ml(df)

@@ -464,7 +464,8 @@ def ask_assistant(user_message, df):
         })
         return reply
 
-    except Exception:
+    except Exception as e:
+        st.warning(f"Groq error: {e}")
         reply = _semantic_fallback(user_message, df)
         st.session_state.conversation_history.append({
             "role": "assistant", "content": reply

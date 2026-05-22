@@ -1,15 +1,15 @@
-pond_id,pond_name,plant_name,region,latitude,longitude,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,sar_backscatter,dii_score,risk_category,top_risk_factor,last_updated,dii_score_prev,dii_trend,breach_probability,dii_lower,dii_upper,mahal_distance,profile_anomaly,dii_mean
-P001,Sasan UMPP Pond A,Sasan UMPP,Singrauli,23.96535,82.64266,-0.107,0.065,10,0,0.5,0.2057,0.382,STABLE,Awaiting sensor data,pending,0.256,↑,0.01,0.371,0.394,1.555,False,0.382
-P002,Sasan UMPP Pond B,Sasan UMPP,Singrauli,24.03242,82.7035,-0.131,0.073,10,0,0.5,0.1323,0.367,STABLE,Awaiting sensor data,pending,0.255,↑,0.008,0.357,0.378,2.033,True,0.367
-P003,Vindhyachal STPS Pond C,Vindhyachal STPS,Singrauli,24.0303,82.73816,-0.021,0.025,10,0,0.5,0.1207,0.377,STABLE,Awaiting sensor data,pending,0.255,↑,0.022,0.366,0.39,0.626,False,0.377
-P004,Vindhyachal STPS Pond D,Vindhyachal STPS,Singrauli,24.05922,82.73777,0.078,-0.04,10,0,0.5,0.1114,0.421,ELEVATED,Awaiting sensor data,pending,0.255,↑,0.057,0.4,0.442,1.67,False,0.421
-P005,Vindhyachal STPS Pond E,Vindhyachal STPS,Singrauli,24.06094,82.71325,0.06,-0.095,10,0,0.5,0.1742,0.422,ELEVATED,Awaiting sensor data,pending,0.255,↑,0.061,0.402,0.443,2.059,True,0.422
-P006,Vindhyachal STPS Pond F,Vindhyachal STPS,Singrauli,24.05986,82.68711,0.035,-0.033,10,0,0.5,0.2168,0.417,ELEVATED,Awaiting sensor data,pending,0.255,↑,0.041,0.397,0.437,1.082,False,0.417
-P007,Singrauli Super TPS Pond G,Singrauli Super TPS,Singrauli,24.10086,82.75822,0.072,-0.029,10,0,0.5,0.1348,0.422,ELEVATED,Awaiting sensor data,pending,0.255,↑,0.053,0.4,0.443,1.697,False,0.422
-P008,NTPC Korba Pond H,NTPC Korba,Korba,22.4282,82.69448,-0.116,0.178,10,0,0.5,0.2467,0.361,STABLE,Awaiting sensor data,pending,0.255,↑,0.006,0.35,0.373,2.625,True,0.361
-P009,NTPC Korba Pond I,NTPC Korba,Korba,22.33621,82.61773,-0.034,0.036,10,0,0.5,0.2668,0.398,STABLE,Awaiting sensor data,pending,0.255,↑,0.019,0.388,0.41,0.61,False,0.398
-P010,NTPC Korba Pond J,NTPC Korba,Korba,22.33775,82.71697,-0.157,0.156,10,0,0.5,0.2558,0.368,STABLE,Awaiting sensor data,pending,0.255,↑,0.005,0.357,0.38,1.758,True,0.368
-P011,NTPC Sipat Pond K,NTPC Sipat,Bilaspur,22.12323,82.29693,-0.078,0.087,10,50,0.5,0.1867,0.413,ELEVATED,Awaiting sensor data,pending,0.295,↑,0.029,0.401,0.426,1.565,False,0.413
-P012,NTPC Sipat Pond L,NTPC Sipat,Bilaspur,22.06718,82.28194,-0.03,0.037,10,50,0.5,0.2003,0.428,ELEVATED,Awaiting sensor data,pending,0.295,↑,0.05,0.415,0.44,1.698,False,0.428
-P013,NTPC Sipat Pond M,NTPC Sipat,Bilaspur,22.08605,82.29047,-0.101,0.093,10,50,0.5,0.211,0.415,ELEVATED,Awaiting sensor data,pending,0.295,↑,0.024,0.404,0.429,1.536,False,0.415
-P014,NTPC Sipat Pond N,NTPC Sipat,Bilaspur,22.09729,82.2758,-0.147,0.128,10,50,0.5,0.2048,0.406,ELEVATED,Awaiting sensor data,pending,0.295,↑,0.015,0.393,0.419,1.712,False,0.406
+pond_id,pond_name,plant_name,region,latitude,longitude,ndwi_score,ndvi_score,slope_degrees,rainfall_forecast_mm,breach_proximity_score,sar_backscatter,dii_score,risk_category,top_risk_factor,last_updated,dii_score_prev,dii_trend,breach_probability,dii_lower,dii_upper,mahal_distance,profile_anomaly,dii_mean,rainfall_source
+P001,Sasan UMPP Pond A,Sasan UMPP,Singrauli,23.96535,82.64266,-0.107,0.065,10,0,0.5,0.2057,0.382,STABLE,Awaiting sensor data,pending,0.382,↓,0.01,0.371,0.394,1.319,False,0.382,live
+P002,Sasan UMPP Pond B,Sasan UMPP,Singrauli,24.03242,82.7035,-0.131,0.073,10,0,0.5,0.1323,0.367,STABLE,Awaiting sensor data,pending,0.367,↓,0.008,0.357,0.378,1.823,True,0.367,live
+P003,Vindhyachal STPS Pond C,Vindhyachal STPS,Singrauli,24.0303,82.73816,-0.021,0.025,10,0,0.5,0.1207,0.377,STABLE,Awaiting sensor data,pending,0.377,→,0.022,0.366,0.39,0.328,False,0.377,live
+P004,Vindhyachal STPS Pond D,Vindhyachal STPS,Singrauli,24.05922,82.73777,0.078,-0.04,10,0,0.5,0.1114,0.421,ELEVATED,Awaiting sensor data,pending,0.421,→,0.057,0.4,0.442,1.662,False,0.421,live
+P005,Vindhyachal STPS Pond E,Vindhyachal STPS,Singrauli,24.06094,82.71325,0.06,-0.095,10,0,0.5,0.1742,0.422,ELEVATED,Awaiting sensor data,pending,0.422,→,0.061,0.402,0.443,2.055,True,0.422,live
+P006,Vindhyachal STPS Pond F,Vindhyachal STPS,Singrauli,24.05986,82.68711,0.035,-0.033,10,0,0.5,0.2168,0.417,ELEVATED,Awaiting sensor data,pending,0.417,→,0.041,0.397,0.437,1.042,False,0.417,live
+P007,Singrauli Super TPS Pond G,Singrauli Super TPS,Singrauli,24.10086,82.75822,0.072,-0.029,10,0,0.5,0.1348,0.422,ELEVATED,Awaiting sensor data,pending,0.422,→,0.053,0.4,0.443,1.685,True,0.422,live
+P008,NTPC Korba Pond H,NTPC Korba,Korba,22.4282,82.69448,-0.116,0.178,10,0,0.5,0.2467,0.361,STABLE,Awaiting sensor data,pending,0.361,↓,0.006,0.35,0.373,2.413,True,0.361,live
+P009,NTPC Korba Pond I,NTPC Korba,Korba,22.33621,82.61773,-0.034,0.036,10,0,0.5,0.2668,0.398,STABLE,Awaiting sensor data,pending,0.398,→,0.019,0.388,0.41,0.172,False,0.398,live
+P010,NTPC Korba Pond J,NTPC Korba,Korba,22.33775,82.71697,-0.157,0.156,10,0,0.5,0.2558,0.368,STABLE,Awaiting sensor data,pending,0.368,↓,0.005,0.357,0.38,1.367,False,0.368,live
+P011,NTPC Sipat Pond K,NTPC Sipat,Bilaspur,22.12323,82.29693,-0.078,0.087,10,0,0.5,0.1867,0.373,STABLE,Awaiting sensor data,pending,0.413,↓,0.011,0.362,0.385,0.539,False,0.373,live
+P012,NTPC Sipat Pond L,NTPC Sipat,Bilaspur,22.06718,82.28194,-0.03,0.037,10,0,0.5,0.2003,0.388,STABLE,Awaiting sensor data,pending,0.428,↓,0.02,0.377,0.398,0.26,False,0.388,live
+P013,NTPC Sipat Pond M,NTPC Sipat,Bilaspur,22.08605,82.29047,-0.101,0.093,10,0,0.5,0.211,0.375,STABLE,Awaiting sensor data,pending,0.415,↓,0.009,0.365,0.387,0.633,False,0.375,live
+P014,NTPC Sipat Pond N,NTPC Sipat,Bilaspur,22.09729,82.2758,-0.147,0.128,10,0,0.5,0.2048,0.366,STABLE,Awaiting sensor data,pending,0.406,↓,0.006,0.355,0.378,1.2,False,0.366,live

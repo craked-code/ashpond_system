@@ -5,8 +5,6 @@ import config
 from data_loader import load_pond_data, load_retrospective_data, load_model
 from streamlit_autorefresh import st_autorefresh
 
-from ml_models import compute_shap_values
-
 from chat_module import init_semantic_index
 init_semantic_index()
 
@@ -19,15 +17,112 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+[data-testid="stAppViewContainer"] {
+    background: #0f1117;
+    color: #e0e0e0;
+}
+
+[data-testid="stSidebar"] {
+    background: #161b27;
+    border-right: 1px solid #2a2f3e;
+}
+
+[data-testid="stSidebar"] * {
+    color: #c9d1d9 !important;
+}
+
+[data-testid="stMetric"] {
+    background: #1c2333;
+    border-radius: 8px;
+    padding: 12px 16px;
+    border: 1px solid #2a2f3e;
+}
+
+[data-testid="stMetricValue"] {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+}
+
+div[data-testid="stChatMessage"] {
+    background: #1c2333;
+    border-radius: 8px;
+    border: 1px solid #2a2f3e;
+    margin-bottom: 8px;
+}
+
+.critical-badge {
+    display: inline-block;
+    background: #7f1d1d;
+    color: #fca5a5;
+    border: 1px solid #ef4444;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    animation: pulse-critical 1.8s ease-in-out infinite;
+}
+
+.elevated-badge {
+    display: inline-block;
+    background: #78350f;
+    color: #fcd34d;
+    border: 1px solid #f59e0b;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.stable-badge {
+    display: inline-block;
+    background: #14532d;
+    color: #86efac;
+    border: 1px solid #22c55e;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+@keyframes pulse-critical {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+    50%       { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+}
+
+[data-testid="stHorizontalBlock"] > div {
+    gap: 1rem;
+}
+
+h1, h2, h3 {
+    color: #e2e8f0 !important;
+}
+
+hr {
+    border-color: #2a2f3e !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st_autorefresh(interval=30 * 60 * 1000, key="data_refresh")
 
 @st.cache_data
 def get_data():
-    return load_pond_data()
+    return load_pond_data().copy()
 
 @st.cache_data
 def get_retro():
-    return load_retrospective_data()
+    return load_retrospective_data().copy()
 
 @st.cache_resource
 def get_ml_model():
@@ -44,20 +139,56 @@ except Exception as e:
 
 # SIDEBAR MONITORING METRICS
 with st.sidebar:
-    st.title("AshPond System")
-    st.caption("AI-powered Breach Early Warning")
-    st.divider()
-    st.metric("🔴 CRITICAL", len(df[df.risk_category == "CRITICAL"]))
-    st.metric("🟠 ELEVATED", len(df[df.risk_category == "ELEVATED"]))
-    st.metric("🟢 STABLE",   len(df[df.risk_category == "STABLE"]))
-    anomalies = df['profile_anomaly'].sum() if 'profile_anomaly' in df.columns else 0
-    st.metric("🔶 ANOMALOUS", int(anomalies))
-    st.divider()
-    st.caption("Singrauli, MP — 5 ponds")
-    st.caption("Korba, CG — 5 ponds")
-    st.divider()
-    st.caption(f"Satellite sync: {getattr(config, 'LAST_FETCH', 'Unknown')}")
-    st.caption("Sensors: Sentinel-2 Optical + Sentinel-1 SAR")
+    rain_source = df['rainfall_source'].iloc[0] if 'rainfall_source' in df.columns else 'unknown'
+    rain_label  = "🟢 Live" if rain_source == "live" else "🟡 Cached"
+    n_critical = len(df[df.risk_category == "CRITICAL"])
+    n_elevated = len(df[df.risk_category == "ELEVATED"])
+    n_stable   = len(df[df.risk_category == "STABLE"])
+    anomalies  = int(df['profile_anomaly'].sum()) if 'profile_anomaly' in df.columns else 0
+
+    st.markdown(f"""
+    <div style="padding: 8px 0 16px 0;">
+        <div style="font-size:1.25rem;font-weight:700;color:#e2e8f0;letter-spacing:0.03em;">
+            ⚠️ AshPond System
+        </div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:2px;">
+            AI-powered Breach Early Warning
+        </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        <div style="background:#7f1d1d;border:1px solid #ef4444;border-radius:8px;padding:10px 14px;
+                    animation: pulse-critical 1.8s ease-in-out infinite;">
+            <div style="font-size:0.7rem;color:#fca5a5;letter-spacing:0.08em;font-weight:600;">CRITICAL</div>
+            <div style="font-size:2rem;font-weight:700;color:#fca5a5;line-height:1.1;">{n_critical}</div>
+        </div>
+        <div style="background:#78350f;border:1px solid #f59e0b;border-radius:8px;padding:10px 14px;">
+            <div style="font-size:0.7rem;color:#fcd34d;letter-spacing:0.08em;font-weight:600;">ELEVATED</div>
+            <div style="font-size:2rem;font-weight:700;color:#fcd34d;line-height:1.1;">{n_elevated}</div>
+        </div>
+        <div style="background:#14532d;border:1px solid #22c55e;border-radius:8px;padding:10px 14px;">
+            <div style="font-size:0.7rem;color:#86efac;letter-spacing:0.08em;font-weight:600;">STABLE</div>
+            <div style="font-size:2rem;font-weight:700;color:#86efac;line-height:1.1;">{n_stable}</div>
+        </div>
+        <div style="background:#1c2333;border:1px solid #f97316;border-radius:8px;padding:10px 14px;">
+            <div style="font-size:0.7rem;color:#fb923c;letter-spacing:0.08em;font-weight:600;">ANOMALOUS</div>
+            <div style="font-size:2rem;font-weight:700;color:#fb923c;line-height:1.1;">{anomalies}</div>
+        </div>
+    </div>
+
+    <div style="background:#1c2333;border:1px solid #2a2f3e;border-radius:8px;padding:10px 14px;
+                margin-bottom:12px;font-size:0.78rem;color:#94a3b8;line-height:1.8;">
+        <div>📍 Singrauli, MP — 5 ponds</div>
+        <div>📍 Korba, CG — 5 ponds</div>
+    </div>
+
+    <div style="background:#1c2333;border:1px solid #2a2f3e;border-radius:8px;padding:10px 14px;
+                font-size:0.75rem;color:#64748b;line-height:1.8;">
+        <div>🛰️ Sync: {getattr(config, 'LAST_FETCH', 'Unknown')}</div>
+        <div>🌧️ Rainfall: {rain_label}</div>
+        <div>📡 Sentinel-2 Optical + Sentinel-1 SAR</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.title("⚠️ Coal Ash Pond Breach Early Warning System")
 st.caption("DII & Breach Probability · SHAP Explainability · Anomaly Detection · Change Point Analysis")
@@ -88,12 +219,13 @@ st.divider()
 st.subheader("📊 Feature 2 — DII Dashboard & SHAP Explainability")
 try:
     from charts_module import build_dii_bar_chart, build_shap_waterfall, build_factor_breakdown_chart
-    col1, col2 = st.columns([1.6, 1])
+    col1, col2 = st.columns([1.8, 1])
+
     with col1:
         st.plotly_chart(build_dii_bar_chart(df), use_container_width=True)
     with col2:
         pond_names = df.sort_values('dii_score', ascending=False)['pond_name'].tolist()
-        selected = st.selectbox("Select Pond for Component-Level AI Inspection", pond_names)
+        selected = st.selectbox("Select Pond for Component-Level AI Inspection", pond_names, key="pond_selector")
         row = df[df['pond_name'] == selected].iloc[0]
         
         risk_icon = {"CRITICAL": "🔴", "ELEVATED": "🟠", "STABLE": "🟢"}
@@ -110,7 +242,7 @@ try:
                       delta="ANOMALOUS FACTOR PROFILE" if row.get('profile_anomaly', False) else "Normal Baseline")
 
         # Interactive Simulation Sliders
-        extra_rain = st.slider("Simulate Local Monsoonal Rainfall Shift (mm)", 0, 200, 0, step=10)
+        extra_rain = st.slider("Simulate Local Monsoonal Rainfall Shift (mm)", 0, 200, 0, step=10, key="rain_slider")
         if extra_rain > 0:
             sim_dii = min(row['dii_score'] + (extra_rain / 500), 1.0)
             sim_cat = "CRITICAL" if sim_dii > 0.70 else "ELEVATED" if sim_dii > 0.40 else "STABLE"
