@@ -14,3 +14,8 @@ groq
 requests
 python-dotenv
 matplotlib
+httpx
+joblib
+planetary-computer
+pystac-client
+stackstac
